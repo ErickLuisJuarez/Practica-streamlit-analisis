@@ -24,7 +24,7 @@ Practica-streamlit-analisis/
 │   └── features/
 │       ├── __init__.py
 │       ├── normalization.py   # Normalización numérica (Min-Max / Z-score)
-│       ├── correlation.py     # Correlación de Pearson y mapa de calor
+│       ├── correlacion.py     # Correlación de Pearson y mapa de calor
 │       └── pca_model.py       # Ajuste del PCA y varianza explicada
 │
 ├── visualization/
