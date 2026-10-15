@@ -1,0 +1,12 @@
+# Entorno
+venv/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+
+# Datos pesados
+data/data-raw/*
+!data/data-raw/.gitkeep
+
