@@ -62,21 +62,19 @@ streamlit run visualization/app.py
 
 Salidas del pipeline:
 
-| Carpeta | Archivo | Contenido |
-|---|---|---|
-| `data-processed/` | `household_clean.parquet` | Dataset limpio en unidades originales (kW, V, A, Wh). Lo usa el dashboard para KPIs y gráficas. |
-| `data-processed/` | `cleaning_report.json` | Inspección inicial y conteos de la limpieza. |
-| `data-input-model/` | `household_prepared.parquet` | Dataset final del Paso 6: variables normalizadas, sin redundantes, con componentes principales y columna `split`. |
-| `data-input-model/` | `scaler_params.json`, `correlation_report.json`, `pca_report.json`, `pca_loadings.csv` | Parámetros y reportes de los Pasos 3-5. |
-| `data-input-model/figures/` | `*.png` | Gráficas para la presentación. |
-| `data-model/` | — | Vacía en esta práctica: es para las salidas de los modelos de las siguientes prácticas. |
+| Carpeta                     | Archivo                                                                                | Contenido                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `data-processed/`           | `household_clean.parquet`                                                              | Dataset limpio en unidades originales (kW, V, A, Wh). Lo usa el dashboard para KPIs y gráficas.                   |
+| `data-processed/`           | `cleaning_report.json`                                                                 | Inspección inicial y conteos de la limpieza.                                                                      |
+| `data-input-model/`         | `household_prepared.parquet`                                                           | Dataset final del Paso 6: variables normalizadas, sin redundantes, con componentes principales y columna `split`. |
+| `data-input-model/`         | `scaler_params.json`, `correlation_report.json`, `pca_report.json`, `pca_loadings.csv` | Parámetros y reportes de los Pasos 3-5.                                                                           |
+| `data-input-model/figures/` | `*.png`                                                                                | Gráficas para la presentación.                                                                                    |
+| `data-model/`               | —                                                                                      | Vacía en esta práctica: es para las salidas de los modelos de las siguientes prácticas.                           |
 
 ## Decisiones técnicas
 
-> Falta completar.
-
-- **Valores faltantes:** … (parámetro `MAX_GAP_MINUTES` en `config/rutas.py`)
-- **Duplicados:** …
-- **Normalización:** … (parámetro `NORMALIZATION_METHOD`; parámetros ajustados solo con el primer `TRAIN_FRACTION` de los datos en el tiempo, para no filtrar información del futuro)
-- **Correlación de Pearson:** umbral … porque …; variables descartadas: …
-- **PCA:** componentes retenidos … según el criterio …; interpretación de los loadings: …
+- **Valores faltantes:** Se aplicó un remuestreo (upsampling) para garantizar una fila por minuto. Los huecos menores o iguales a 60 minutos (`MAX_GAP_MINUTES = 60`) se rellenaron mediante interpolación lineal. Los registros en huecos mayores a 60 minutos se eliminaron para no inventar tendencias irreales.
+- **Duplicados:** Se eliminaron las filas exactamente idénticas. Para las filas con el mismo timestamp (fecha y hora repetida), se conservó únicamente la primera aparición cronológica (`keep="first"`).
+- **Normalización:** Se utilizó `z-score` (StandardScaler). Para respetar la naturaleza de la serie de tiempo y evitar el "data leakage" (filtrar información del futuro hacia el pasado), los parámetros de media y desviación estándar se calcularon **exclusivamente con el primer 70% cronológico de los datos** (`TRAIN_FRACTION = 0.70`).
+- **Correlación de Pearson:** Se usó un umbral de redundancia de `|r| >= 0.90` porque a partir de ese valor las variables explican el mismo fenómeno. Como variable preferida a conservar se definió `Global_active_power` (típica variable objetivo). La variable descartada es `Global_intensity` (debido a su redundancia casi perfecta con la potencia).
+- **PCA:** Se retuvieron los primeros componentes que logran acumular un objetivo de varianza del `90%` (`PCA_VARIANCE_TARGET = 0.90`). La interpretación de los loadings nos indica que el PC1 captura la magnitud global del consumo, mientras que los siguientes componentes capturan patrones específicos de uso en los submedidores.
