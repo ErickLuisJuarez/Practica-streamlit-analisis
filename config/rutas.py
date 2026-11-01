@@ -1,43 +1,71 @@
+
 from pathlib import Path
 
-# Rutas del proyecto
+# Rutas principales del proyecto
 ROOT = Path(__file__).resolve().parents[1]
-DATA_RAW = ROOT / "data" / "data-raw"   # Original, nunca se edita
-DATA_PROCESSED = ROOT / "data" / "data-processed"  # Limpio: sin duplicados, tipos corregidos, imputado
-DATA_INPUT_MODEL = ROOT / "data" / "data-input-model" # Transformado: listo como entrada de un modelo
-DATA_MODEL = ROOT / "data" / "data-model"  # Salidas de modelos (predicciones, clusters, reglas)
+
+DATA_RAW = ROOT / "data" / "data-raw"
+DATA_PROCESSED = ROOT / "data" / "data-processed"
+DATA_INPUT_MODEL = ROOT / "data" / "data-input-model"
+DATA_MODEL = ROOT / "data" / "data-model"
+
 FIGURES = DATA_INPUT_MODEL / "figures"
 
-# Archivo CSV único
+# Archivo original
 RAW_FILE = DATA_RAW / "household_power_consumption.csv"
 
-#Columnas
+# Archivo preparado para reglas de asociación
+ASSOCIATION_FILE = DATA_PROCESSED / "input_reglas_asociacion.csv"
+
+# Columnas originales
 DATE_COL = "Date"
 TIME_COL = "Time"
 DATETIME_COL = "datetime"
-NUMERIC_COLS = [
-    "Global_active_power", #kW
-    "Global_reactive_power", #kW
-    "Voltage", #V
-    "Global_intensity", #A
-    "Sub_metering_1", #Wh (cocina)
-    "Sub_metering_2", #Wh (lavandería)
-    "Sub_metering_3", #Wh (calentador de agua y A/C)
-]
-NULL_TOKENS = ["?", ""]  #Marcadores de faltante del dataset
 
-# Decisiones (Paso 2)
+NUMERIC_COLS = [
+    "Global_active_power",
+    "Global_reactive_power",
+    "Voltage",
+    "Global_intensity",
+    "Sub_metering_1",
+    "Sub_metering_2",
+    "Sub_metering_3",
+]
+
+NULL_TOKENS = ["?", ""]
+
+# Decisiones de la práctica anterior
+
 MAX_GAP_MINUTES = 60
 
-#Decisiones (Paso 3)
-NORMALIZATION_METHOD = "zscore" #"zscore" | "minmax"
-TRAIN_FRACTION = 0.70 #Primeros 70% en el tiempo -> ajusta parámetros
+NORMALIZATION_METHOD = "zscore"
+TRAIN_FRACTION = 0.70
 
-#Decisiones (Paso 4)
 CORR_THRESHOLD = 0.90
-CORR_PREFER_KEEP = ["Global_active_power"]  #Variable objetivo típica de regresión
+CORR_PREFER_KEEP = ["Global_active_power"]
 
-#Decisiones (Paso 5)
-PCA_VARIANCE_TARGET = 0.90 #Varianza acumulada mínima a conservar
-PCA_PLOT_SAMPLE = 20_000  #Puntos para la proyección 2D  
+PCA_VARIANCE_TARGET = 0.90
+PCA_PLOT_SAMPLE = 20_000
 RANDOM_STATE = 42
+
+# Columnas para reglas de asociación
+
+DAY_COL = "Dia_Semana"
+TIME_OF_DAY_COL = "Tiempo_Dia"
+ACTIVE_ROOMS_COL = "Habitaciones_Activas"
+
+ASSOCIATION_ITEM_COLS = [
+    "Cocina",
+    "Lavanderia",
+    "Climatizacion",
+]
+
+# Rangos horarios utilizados para clasificar el tiempo del día
+TIME_RANGES = {
+    "Madrugada": (0, 5),
+    "Mañana": (6, 11),
+    "Mediodía": (12, 13),
+    "Tarde": (14, 18),
+    "Noche": (19, 23),
+}
+

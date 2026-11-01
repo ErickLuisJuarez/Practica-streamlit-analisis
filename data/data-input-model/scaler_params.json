@@ -1,0 +1,22 @@
+{
+  "method": "zscore",
+  "ajustado_con_datos_hasta": "2009-09-13 15:32:00",
+  "mean": {
+    "Global_active_power": 1.0862885766123445,
+    "Global_reactive_power": 0.12087967842687347,
+    "Voltage": 240.4856880268098,
+    "Global_intensity": 4.618141043021625,
+    "Sub_metering_1": 1.1489892987857366,
+    "Sub_metering_2": 1.3705615192615583,
+    "Sub_metering_3": 6.057390515209832
+  },
+  "std": {
+    "Global_active_power": 1.0909753694315494,
+    "Global_reactive_power": 0.11103141232183948,
+    "Voltage": 3.292872240721193,
+    "Global_intensity": 4.589591869435391,
+    "Sub_metering_1": 6.259266175312414,
+    "Sub_metering_2": 6.069404955966543,
+    "Sub_metering_3": 8.266340132690274
+  }
+}

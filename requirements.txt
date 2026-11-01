@@ -8,3 +8,4 @@ seaborn
 streamlit
 plotly
 pyarrow
+mlxtend

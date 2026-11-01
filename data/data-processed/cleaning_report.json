@@ -1,0 +1,145 @@
+{
+  "inspeccion_inicial": {
+    "filas": 2075259,
+    "columnas": 9,
+    "tipos_detectados_en_lectura": {
+      "Date": "String",
+      "Time": "String",
+      "Global_active_power": "String",
+      "Global_reactive_power": "String",
+      "Voltage": "String",
+      "Global_intensity": "String",
+      "Sub_metering_1": "String",
+      "Sub_metering_2": "String",
+      "Sub_metering_3": "String"
+    },
+    "faltantes_por_columna": {
+      "Date": 0,
+      "Time": 0,
+      "Global_active_power": 25979,
+      "Global_reactive_power": 25979,
+      "Voltage": 25979,
+      "Global_intensity": 25979,
+      "Sub_metering_1": 25979,
+      "Sub_metering_2": 25979,
+      "Sub_metering_3": 25979
+    },
+    "faltantes_pct": {
+      "Date": 0.0,
+      "Time": 0.0,
+      "Global_active_power": 1.252,
+      "Global_reactive_power": 1.252,
+      "Voltage": 1.252,
+      "Global_intensity": 1.252,
+      "Sub_metering_1": 1.252,
+      "Sub_metering_2": 1.252,
+      "Sub_metering_3": 1.252
+    },
+    "fecha_inicio": "2006-12-16 17:24:00",
+    "fecha_fin": "2010-11-26 21:02:00",
+    "descriptivos": [
+      {
+        "statistic": "count",
+        "Global_active_power": 2049280.0,
+        "Global_reactive_power": 2049280.0,
+        "Voltage": 2049280.0,
+        "Global_intensity": 2049280.0,
+        "Sub_metering_1": 2049280.0,
+        "Sub_metering_2": 2049280.0,
+        "Sub_metering_3": 2049280.0
+      },
+      {
+        "statistic": "null_count",
+        "Global_active_power": 25979.0,
+        "Global_reactive_power": 25979.0,
+        "Voltage": 25979.0,
+        "Global_intensity": 25979.0,
+        "Sub_metering_1": 25979.0,
+        "Sub_metering_2": 25979.0,
+        "Sub_metering_3": 25979.0
+      },
+      {
+        "statistic": "mean",
+        "Global_active_power": 1.0916150365006247,
+        "Global_reactive_power": 0.12371447630387256,
+        "Voltage": 240.83985797450816,
+        "Global_intensity": 4.627759310587134,
+        "Sub_metering_1": 1.1219233096502186,
+        "Sub_metering_2": 1.2985199679887571,
+        "Sub_metering_3": 6.45844735712055
+      },
+      {
+        "statistic": "std",
+        "Global_active_power": 1.0572941610939826,
+        "Global_reactive_power": 0.11272197955071626,
+        "Voltage": 3.2399866790095815,
+        "Global_intensity": 4.444396259786167,
+        "Sub_metering_1": 6.153031089701352,
+        "Sub_metering_2": 5.8220264731775035,
+        "Sub_metering_3": 8.437153908665472
+      },
+      {
+        "statistic": "min",
+        "Global_active_power": 0.076,
+        "Global_reactive_power": 0.0,
+        "Voltage": 223.2,
+        "Global_intensity": 0.2,
+        "Sub_metering_1": 0.0,
+        "Sub_metering_2": 0.0,
+        "Sub_metering_3": 0.0
+      },
+      {
+        "statistic": "25%",
+        "Global_active_power": 0.308,
+        "Global_reactive_power": 0.048,
+        "Voltage": 238.99,
+        "Global_intensity": 1.4,
+        "Sub_metering_1": 0.0,
+        "Sub_metering_2": 0.0,
+        "Sub_metering_3": 0.0
+      },
+      {
+        "statistic": "50%",
+        "Global_active_power": 0.602,
+        "Global_reactive_power": 0.1,
+        "Voltage": 241.01,
+        "Global_intensity": 2.6,
+        "Sub_metering_1": 0.0,
+        "Sub_metering_2": 0.0,
+        "Sub_metering_3": 1.0
+      },
+      {
+        "statistic": "75%",
+        "Global_active_power": 1.528,
+        "Global_reactive_power": 0.194,
+        "Voltage": 242.89,
+        "Global_intensity": 6.4,
+        "Sub_metering_1": 0.0,
+        "Sub_metering_2": 1.0,
+        "Sub_metering_3": 17.0
+      },
+      {
+        "statistic": "max",
+        "Global_active_power": 11.122,
+        "Global_reactive_power": 1.39,
+        "Voltage": 254.15,
+        "Global_intensity": 48.4,
+        "Sub_metering_1": 88.0,
+        "Sub_metering_2": 80.0,
+        "Sub_metering_3": 31.0
+      }
+    ]
+  },
+  "limpieza": {
+    "filas_originales": 2075259,
+    "fallos_de_casteo_fecha": 0,
+    "duplicados_exactos": 0,
+    "timestamps_repetidos": 0,
+    "filas_agregadas_por_rejilla": 0,
+    "minutos_faltantes_totales": 25979,
+    "interpolados_(huecos<=max_gap)": 288,
+    "eliminados_(huecos>max_gap)": 25691,
+    "max_gap_minutos": 60,
+    "filas_finales": 2049568
+  }
+}

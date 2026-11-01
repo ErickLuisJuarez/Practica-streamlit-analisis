@@ -1,0 +1,30 @@
+{
+  "umbral": 0.9,
+  "pares_altamente_correlacionados": [
+    {
+      "var_a": "Global_active_power",
+      "var_b": "Global_intensity",
+      "r": 0.9989503318981834
+    }
+  ],
+  "decisiones": [
+    {
+      "var_a": "Global_active_power",
+      "var_b": "Global_intensity",
+      "r": 0.9989503318981834,
+      "descartada": "Global_intensity",
+      "razon": "se conserva Global_active_power (variable preferida)"
+    }
+  ],
+  "conservadas": [
+    "Global_active_power",
+    "Global_reactive_power",
+    "Voltage",
+    "Sub_metering_1",
+    "Sub_metering_2",
+    "Sub_metering_3"
+  ],
+  "descartadas": [
+    "Global_intensity"
+  ]
+}

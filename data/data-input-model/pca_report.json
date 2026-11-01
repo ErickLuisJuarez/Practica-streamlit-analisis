@@ -1,0 +1,39 @@
+{
+  "variables_usadas": [
+    "Global_active_power",
+    "Global_reactive_power",
+    "Voltage",
+    "Sub_metering_1",
+    "Sub_metering_2",
+    "Sub_metering_3"
+  ],
+  "ya_estaba_estandarizado": true,
+  "valores_propios": [
+    2.321935830222489,
+    0.991764623811046,
+    0.9363313763287675,
+    0.8292156913457899,
+    0.7513449466590844,
+    0.16941171370346583
+  ],
+  "varianza_explicada": [
+    0.3869890353011676,
+    0.16529398875665138,
+    0.1560551206158715,
+    0.1382025188955155,
+    0.12522407049386258,
+    0.028235265936931517
+  ],
+  "varianza_acumulada": [
+    0.3869890353011676,
+    0.552283024057819,
+    0.7083381446736905,
+    0.846540663569206,
+    0.9717647340630686,
+    1.0000000000000002
+  ],
+  "k_por_varianza_acumulada": 5,
+  "k_kaiser": 1,
+  "objetivo_varianza": 0.9,
+  "k_elegido": 5
+}
