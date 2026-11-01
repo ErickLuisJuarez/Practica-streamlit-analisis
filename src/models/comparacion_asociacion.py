@@ -1,6 +1,5 @@
-
 """
-Comparación de los algoritmos Apriori y FP-Growth.
+Comparación de los algoritmos Apriori y FP-Growth
 """
 
 import time
@@ -11,7 +10,10 @@ from src.models import reglas_asociacion as ra
 
 
 # Valores de soporte mínimo que se evaluarán en los algoritmos
-SOPORTES_MINIMOS = [0.01, 0.02, 0.03, 0.05]
+SOPORTES_MINIMOS = [
+    0.01, 0.02, 0.03, 0.05,
+    0.10, 0.30, 0.50, 0.70,
+]
 
 # Directorio donde se almacenarán los resultados de la comparación
 RESULTS_DIR = cfg.DATA_MODEL / "reglas_asociacion"
@@ -29,7 +31,7 @@ DETALLE_FILE = (
 
 def medir_apriori(matriz, soporte):
     """
-    Ejecuta Apriori y mide su tiempo de ejecución.
+    Ejecuta Apriori y mide su tiempo de ejecución
     """
 
     # Registra el instante en que comienza la ejecución
@@ -50,7 +52,7 @@ def medir_apriori(matriz, soporte):
 
 def medir_fpgrowth(matriz, soporte):
     """
-    Ejecuta FP-Growth y mide su tiempo de ejecución.
+    Ejecuta FP-Growth y mide su tiempo de ejecución
     """
 
     # Registra el instante en que comienza la ejecución
@@ -71,10 +73,10 @@ def medir_fpgrowth(matriz, soporte):
 
 def comparar_itemsets(itemsets_apriori, itemsets_fpgrowth):
     """
-    Compara los conjuntos frecuentes de ambos algoritmos.
+    Compara los conjuntos frecuentes de ambos algoritmos
     """
 
-    # Convierte los itemsets de Apriori en un conjunto de Python.
+    # Convierte los itemsets de Apriori en un conjunto de Python
     conjuntos_apriori = set(
         itemsets_apriori["itemsets"]
     )
@@ -112,7 +114,7 @@ def comparar_itemsets(itemsets_apriori, itemsets_fpgrowth):
 
 def ejecutar_comparacion(matriz):
     """
-    Ejecuta la comparación para todos los soportes mínimos.
+    Ejecuta la comparación para todos los soportes mínimos
     """
 
     # Listas que almacenarán los resultados generales y detallados
@@ -129,10 +131,9 @@ def ejecutar_comparacion(matriz):
             soporte,
         )
 
-        # Genera las reglas de Apriori con la confianza mínima establecida
+        # Genera las reglas con la confianza mínima predeterminada
         reglas_apriori = ra.generar_reglas(
             itemsets_apriori,
-            len(matriz),
         )
 
         # Ejecuta FP-Growth y obtiene sus itemsets y tiempo de ejecución
@@ -141,10 +142,9 @@ def ejecutar_comparacion(matriz):
             soporte,
         )
 
-        # Genera las reglas de FP-Growth con la misma confianza mínima
+        # Genera las reglas con la misma confianza mínima
         reglas_fpgrowth = ra.generar_reglas(
             itemsets_fpgrowth,
-            len(matriz),
         )
 
         # Compara los conjuntos frecuentes obtenidos por ambos algoritmos
@@ -153,7 +153,7 @@ def ejecutar_comparacion(matriz):
             itemsets_fpgrowth,
         )
 
-        # Agrega a la lista los tiempos, las reglas y los itemsets encontrados
+        # Agrega los tiempos, las reglas y los itemsets encontrados
         resultados.append({
             "Soporte_Minimo": soporte,
             "Tiempo_Apriori": tiempo_apriori,
@@ -191,7 +191,7 @@ def ejecutar_comparacion(matriz):
             comparacion["Coinciden"],
         )
 
-    # Convierte las listas de resultados en DataFrames para su análisis
+    # Convierte las listas de resultados en DataFrames
     return (
         pd.DataFrame(resultados),
         pd.DataFrame(detalles),
@@ -200,7 +200,7 @@ def ejecutar_comparacion(matriz):
 
 def guardar_comparacion(df_resultados, df_detalles):
     """
-    Guarda los resultados de la comparación en archivos CSV.
+    Guarda los resultados de la comparación en archivos CSV
     """
 
     # Crea el directorio de resultados si todavía no existe
@@ -229,7 +229,7 @@ def guardar_comparacion(df_resultados, df_detalles):
 
 def main():
     """
-    Ejecuta la comparación completa.
+    Ejecuta la comparación completa
     """
 
     # Carga el dataset preparado para las reglas de asociación
@@ -245,13 +245,13 @@ def main():
     print(f"Transacciones: {len(transacciones):,}")
     print(f"Ítems: {matriz.shape[1]}")
 
-    #Ejecuta la comparación con todos los soportes mínimos
+    # Ejecuta la comparación con todos los soportes mínimos
     resultados, detalles = ejecutar_comparacion(matriz)
 
-    # Guarda los resultados obtenidos en archivos CSV.
+    # Guarda los resultados obtenidos en archivos CSV
     guardar_comparacion(resultados, detalles)
 
-    # Informa que el proceso terminó.
+    # Informa que el proceso terminó
     print("\nComparación finalizada.")
 
 

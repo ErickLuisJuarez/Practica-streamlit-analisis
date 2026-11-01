@@ -1,6 +1,5 @@
-
 """
-Visualización de los resultados de las reglas de asociación.
+Visualización de los resultados de las reglas de asociación
 """
 
 import pandas as pd
@@ -8,12 +7,13 @@ import matplotlib.pyplot as plt
 
 from config import rutas as cfg
 
+
 # Directorios donde se encuentran los resultados y se guardarán las gráficas
 RESULTS_DIR = cfg.DATA_MODEL / "reglas_asociacion"
 
 FIGURES_DIR = cfg.FIGURES / "reglas_asociacion"
 
-# Archivos CSV de comparación
+# Archivo CSV de comparación
 COMPARACION_FILE = (
     RESULTS_DIR / "comparacion_algoritmos.csv"
 )
@@ -27,9 +27,10 @@ RULES_FPGROWTH_FILE = (
     cfg.DATA_PROCESSED / "reglas_fpgrowth.csv"
 )
 
+
 def cargar_comparacion():
     """
-    Carga los resultados de la comparación.
+    Carga los resultados de la comparación
     """
 
     # Comprueba que exista el archivo de comparación
@@ -44,7 +45,7 @@ def cargar_comparacion():
 
 def cargar_reglas(ruta):
     """
-    Carga las reglas generadas por un algoritmo.
+    Carga las reglas generadas por un algoritmo
     """
 
     # Comprueba que exista el archivo de reglas solicitado
@@ -59,7 +60,7 @@ def cargar_reglas(ruta):
 
 def graficar_itemsets(df):
     """
-    Compara la cantidad de itemsets frecuentes según el soporte mínimo.
+    Compara la cantidad de itemsets frecuentes según el soporte mínimo
     """
 
     # Crea una figura donde se dibujarán los resultados
@@ -107,7 +108,7 @@ def graficar_itemsets(df):
 
 def graficar_tiempos(df):
     """
-    Compara los tiempos de ejecución de ambos algoritmos.
+    Compara los tiempos de ejecución de ambos algoritmos
     """
 
     # Crea una figura para representar los tiempos de ejecución
@@ -155,7 +156,7 @@ def graficar_tiempos(df):
 
 def graficar_metricas(reglas_apriori, reglas_fpgrowth):
     """
-    Genera histogramas comparativos de soporte, confianza y lift.
+    Genera histogramas comparativos de soporte, confianza y lift
     """
 
     # Define las métricas que se analizarán
@@ -173,8 +174,6 @@ def graficar_metricas(reglas_apriori, reglas_fpgrowth):
 
         # Comprueba si Apriori generó reglas antes de dibujar su histograma
         if not reglas_apriori.empty:
-
-            # Representa la distribución de la métrica para Apriori
             plt.hist(
                 reglas_apriori[metrica],
                 bins=20,
@@ -184,8 +183,6 @@ def graficar_metricas(reglas_apriori, reglas_fpgrowth):
 
         # Comprueba si FP-Growth generó reglas
         if not reglas_fpgrowth.empty:
-
-            # Representa la distribución de la métrica para FP-Growth
             plt.hist(
                 reglas_fpgrowth[metrica],
                 bins=20,
@@ -198,7 +195,7 @@ def graficar_metricas(reglas_apriori, reglas_fpgrowth):
         plt.ylabel("Cantidad de reglas")
         plt.title(f"Distribución de {metrica}")
 
-        # Muestra los algoritmos representados en el histograma
+        # Muestra los algoritmos representados en los histogramas
         plt.legend()
 
         # Agrega una cuadrícula para facilitar la lectura
@@ -219,7 +216,7 @@ def graficar_metricas(reglas_apriori, reglas_fpgrowth):
 
 def main():
     """
-    Ejecuta la generación de las gráficas.
+    Ejecuta la generación de las gráficas
     """
 
     # Crea el directorio de las gráficas si todavía no existe
@@ -254,7 +251,7 @@ def main():
     )
 
     # Informa que las gráficas se generaron correctamente
-    print("\nGráficas generadas correctamente.")
+    print("\nGráficas generadas correctamente")
     print(f"Directorio: {FIGURES_DIR}")
 
 

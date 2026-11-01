@@ -1,7 +1,5 @@
-
 """
-Prepara el dataset para la Práctica 6:
-Reglas de Asociación sobre consumo eléctrico.
+Reglas de Asociación sobre consumo eléctrico
 """
 
 import polars as pl
@@ -107,6 +105,11 @@ def construir_transacciones(df):
         period="1h",
     ).agg(promedios + sumas)
 
+    # Descarta las horas sin mediciones válidas
+    df = df.filter(
+        pl.col("Global_active_power").is_not_null()
+    )
+
     # Determina si cada habitación estuvo activa
     df = df.with_columns([
         (pl.col("Sub_metering_1") > 0).alias("Cocina"),
@@ -135,21 +138,30 @@ def agregar_variables_temporales(df):
         .alias("hora"),
     ])
 
-    # Clasifica cada hora del día
+    # Construye la clasificación a partir de los rangos de configuración
+    expresion_tiempo = None
+
+    for nombre, (hora_inicio, hora_fin) in cfg.TIME_RANGES.items():
+        condicion = pl.col("hora").is_between(
+            hora_inicio,
+            hora_fin,
+        )
+
+        if expresion_tiempo is None:
+            expresion_tiempo = pl.when(condicion).then(
+                pl.lit(nombre)
+            )
+        else:
+            expresion_tiempo = expresion_tiempo.when(
+                condicion
+            ).then(
+                pl.lit(nombre)
+            )
+
+    # Asigna la franja horaria correspondiente
     df = df.with_columns(
-        pl.when(pl.col("hora").is_between(0, 5))
-        .then(pl.lit("Madrugada"))
-
-        .when(pl.col("hora").is_between(6, 11))
-        .then(pl.lit("Mañana"))
-
-        .when(pl.col("hora").is_between(12, 13))
-        .then(pl.lit("Mediodía"))
-
-        .when(pl.col("hora").is_between(14, 18))
-        .then(pl.lit("Tarde"))
-
-        .otherwise(pl.lit("Noche"))
+        expresion_tiempo
+        .otherwise(None)
         .alias(cfg.TIME_OF_DAY_COL)
     )
 
@@ -191,7 +203,7 @@ def guardar_dataset(df):
 
     df.write_csv(cfg.ASSOCIATION_FILE)
 
-    print("\nDataset preparado correctamente.")
+    print("\nDataset preparado correctamente")
     print(f"Archivo: {cfg.ASSOCIATION_FILE}")
     print(f"Filas: {df.height:,}")
     print(f"Columnas: {df.width}")
@@ -217,4 +229,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

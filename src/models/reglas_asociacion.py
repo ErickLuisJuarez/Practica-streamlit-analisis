@@ -1,13 +1,9 @@
-
 """
 Minería de reglas de asociación mediante Apriori y FP-Growth
-
-Carga las transacciones horarias, construye la matriz de ítems, ejecuta ambos algoritmos y genera las reglas de asociación con soporte, confianza y lift
 """
 
-from pathlib import Path
-
 import pandas as pd
+
 from mlxtend.frequent_patterns import apriori
 from mlxtend.frequent_patterns import fpgrowth
 from mlxtend.frequent_patterns import association_rules
@@ -19,12 +15,18 @@ from config import rutas as cfg
 # Parámetros iniciales de los algoritmos
 MIN_SUPPORT = 0.02
 MIN_CONFIDENCE = 0.50
+MIN_LIFT = 1.10
 
 # Directorios donde se guardarán los resultados
 RESULTS_DIR = cfg.DATA_MODEL / "reglas_asociacion"
 
-ITEMSETS_APRIORI_FILE = RESULTS_DIR / "itemsets_apriori.csv"
-ITEMSETS_FPGROWTH_FILE = RESULTS_DIR / "itemsets_fpgrowth.csv"
+ITEMSETS_APRIORI_FILE = (
+    RESULTS_DIR / "itemsets_apriori.csv"
+)
+
+ITEMSETS_FPGROWTH_FILE = (
+    RESULTS_DIR / "itemsets_fpgrowth.csv"
+)
 
 # Las reglas de asociación se guardan en data-processed
 RULES_APRIORI_FILE = (
@@ -34,6 +36,7 @@ RULES_APRIORI_FILE = (
 RULES_FPGROWTH_FILE = (
     cfg.DATA_PROCESSED / "reglas_fpgrowth.csv"
 )
+
 
 def cargar_datos():
     """
@@ -52,6 +55,7 @@ def cargar_datos():
         cfg.DAY_COL,
         cfg.TIME_OF_DAY_COL,
         *cfg.ASSOCIATION_ITEM_COLS,
+        cfg.ACTIVE_ROOMS_COL,
     ]
 
     columnas_faltantes = [
@@ -67,7 +71,7 @@ def cargar_datos():
         )
 
     if df.empty:
-        raise ValueError("El dataset no contiene registros.")
+        raise ValueError("El dataset no contiene registros")
 
     print(f"Registros cargados: {len(df):,}")
 
@@ -75,7 +79,9 @@ def cargar_datos():
 
 
 def esta_activo(valor):
-    """Comprueba si una habitación estuvo activa."""
+    """
+    Comprueba si una habitación estuvo activa
+    """
 
     if pd.isna(valor):
         return False
@@ -90,9 +96,10 @@ def esta_activo(valor):
 
 def construir_transacciones(df):
     """
-    Construye una transacción por cada hora.
+    Construye una transacción por cada hora
 
-    Cada transacción contiene: Día de la semana, tiempo del día y habitaciones activas
+    Cada transacción contiene el día de la semana,
+    el tiempo del día y las habitaciones activas
     """
 
     transacciones = []
@@ -100,19 +107,19 @@ def construir_transacciones(df):
     for _, fila in df.iterrows():
         transaccion = []
 
-        # Agregar el día de la semana.
+        # Agrega el día de la semana
         dia = fila[cfg.DAY_COL]
 
         if pd.notna(dia):
             transaccion.append(f"Dia={dia}")
 
-        # Agregar el tiempo del día.
+        # Agrega el tiempo del día
         tiempo = fila[cfg.TIME_OF_DAY_COL]
 
         if pd.notna(tiempo):
             transaccion.append(f"Tiempo={tiempo}")
 
-        # Agregar las habitaciones activas.
+        # Agrega las habitaciones activas
         habitaciones = fila[cfg.ACTIVE_ROOMS_COL]
 
         if pd.notna(habitaciones):
@@ -125,7 +132,6 @@ def construir_transacciones(df):
         transacciones.append(transaccion)
 
     return transacciones
-
 
 
 def construir_matriz(transacciones):
@@ -141,7 +147,7 @@ def construir_matriz(transacciones):
 
     df_matriz = pd.DataFrame(
         matriz_codificada,
-        columns=codificador.columns_
+        columns=codificador.columns_,
     )
 
     print(f"Cantidad de ítems: {df_matriz.shape[1]}")
@@ -151,21 +157,21 @@ def construir_matriz(transacciones):
 
 def ejecutar_apriori(df_matriz, min_support=MIN_SUPPORT):
     """
-    Ejecuta Apriori y obtiene los itemsets frecuentes   
+    Ejecuta Apriori y obtiene los itemsets frecuentes
     """
 
     itemsets = apriori(
         df_matriz,
         min_support=min_support,
-        use_colnames=True
+        use_colnames=True,
     )
 
     itemsets = itemsets.sort_values(
         by="support",
-        ascending=False
+        ascending=False,
     ).reset_index(drop=True)
 
-    print(f"Apriori encontró {len(itemsets)} itemsets.")
+    print(f"Apriori encontró {len(itemsets)} itemsets")
 
     return itemsets
 
@@ -178,45 +184,49 @@ def ejecutar_fpgrowth(df_matriz, min_support=MIN_SUPPORT):
     itemsets = fpgrowth(
         df_matriz,
         min_support=min_support,
-        use_colnames=True
+        use_colnames=True,
     )
 
     itemsets = itemsets.sort_values(
         by="support",
-        ascending=False
+        ascending=False,
     ).reset_index(drop=True)
 
-    print(f"FP-Growth encontró {len(itemsets)} itemsets.")
+    print(f"FP-Growth encontró {len(itemsets)} itemsets")
 
     return itemsets
 
 
 def generar_reglas(itemsets, min_confidence=MIN_CONFIDENCE):
     """
-    Genera reglas de asociación y calcula sus métricas 
+    Genera reglas de asociación y calcula sus métricas
     """
 
-    if itemsets.empty:
+    # Comprueba que existan itemsets con al menos dos elementos
+    if (
+        itemsets.empty
+        or not itemsets["itemsets"].map(len).ge(2).any()
+    ):
         return pd.DataFrame()
 
     reglas = association_rules(
         itemsets,
         metric="confidence",
-        min_threshold=min_confidence
+        min_threshold=min_confidence,
     )
 
     if reglas.empty:
         return reglas
 
-    # Conserva las asociaciones positivas
+    # Conserva las asociaciones con lift igual o superior al mínimo
     reglas = reglas[
-        reglas["lift"] > 1
+        reglas["lift"] >= MIN_LIFT
     ].copy()
 
-    # Ordena las reglas por lift descendente
+    # Ordena las reglas por lift, confianza y soporte descendente
     reglas = reglas.sort_values(
         by=["lift", "confidence", "support"],
-        ascending=False
+        ascending=False,
     ).reset_index(drop=True)
 
     print(f"Reglas relevantes encontradas: {len(reglas)}")
@@ -241,7 +251,7 @@ def preparar_exportacion_itemsets(itemsets):
 
 def preparar_exportacion_reglas(reglas):
     """
-    Prepara los antecedentes y consecuentes para el CSV     
+    Prepara los antecedentes y consecuentes para el CSV
     """
 
     resultado = reglas.copy()
@@ -266,13 +276,21 @@ def guardar_resultados(
     itemsets_apriori,
     itemsets_fpgrowth,
     reglas_apriori,
-    reglas_fpgrowth
+    reglas_fpgrowth,
 ):
-    """Guarda los itemsets y las reglas en archivos CSV."""
+    """
+    Guarda los itemsets y las reglas en archivos CSV
+    """
 
+    # Crea los directorios de resultados si todavía no existen
     RESULTS_DIR.mkdir(
         parents=True,
-        exist_ok=True
+        exist_ok=True,
+    )
+
+    cfg.DATA_PROCESSED.mkdir(
+        parents=True,
+        exist_ok=True,
     )
 
     # Guarda los itemsets de Apriori
@@ -280,7 +298,7 @@ def guardar_resultados(
         itemsets_apriori
     ).to_csv(
         ITEMSETS_APRIORI_FILE,
-        index=False
+        index=False,
     )
 
     # Guarda los itemsets de FP-Growth
@@ -288,7 +306,7 @@ def guardar_resultados(
         itemsets_fpgrowth
     ).to_csv(
         ITEMSETS_FPGROWTH_FILE,
-        index=False
+        index=False,
     )
 
     # Guarda las reglas de Apriori
@@ -296,7 +314,7 @@ def guardar_resultados(
         reglas_apriori
     ).to_csv(
         RULES_APRIORI_FILE,
-        index=False
+        index=False,
     )
 
     # Guarda las reglas de FP-Growth
@@ -304,49 +322,52 @@ def guardar_resultados(
         reglas_fpgrowth
     ).to_csv(
         RULES_FPGROWTH_FILE,
-        index=False
+        index=False,
     )
 
-    print("\nResultados guardados correctamente.")
-    print(f"Directorio: {RESULTS_DIR}")
+    print("\nResultados guardados correctamente")
+    print(f"Itemsets: {RESULTS_DIR}")
+    print(f"Reglas: {cfg.DATA_PROCESSED}")
 
 
 def ejecutar_modelos(
     df_matriz,
     min_support=MIN_SUPPORT,
-    min_confidence=MIN_CONFIDENCE
+    min_confidence=MIN_CONFIDENCE,
 ):
-    """Ejecuta ambos algoritmos y genera sus reglas."""
+    """
+    Ejecuta ambos algoritmos y genera sus reglas
+    """
 
     print("\nEjecutando Apriori...")
 
     itemsets_apriori = ejecutar_apriori(
         df_matriz,
-        min_support
+        min_support,
     )
 
     reglas_apriori = generar_reglas(
         itemsets_apriori,
-        min_confidence
+        min_confidence,
     )
 
     print("\nEjecutando FP-Growth...")
 
     itemsets_fpgrowth = ejecutar_fpgrowth(
         df_matriz,
-        min_support
+        min_support,
     )
 
     reglas_fpgrowth = generar_reglas(
         itemsets_fpgrowth,
-        min_confidence
+        min_confidence,
     )
 
     return (
         itemsets_apriori,
         itemsets_fpgrowth,
         reglas_apriori,
-        reglas_fpgrowth
+        reglas_fpgrowth,
     )
 
 
@@ -369,14 +390,13 @@ def main():
     resultados = ejecutar_modelos(
         df_matriz,
         min_support=MIN_SUPPORT,
-        min_confidence=MIN_CONFIDENCE
+        min_confidence=MIN_CONFIDENCE,
     )
 
     guardar_resultados(*resultados)
 
-    print("\nProceso de reglas de asociación finalizado.")
+    print("\nProceso de reglas de asociación finalizado")
 
 
 if __name__ == "__main__":
     main()
-
